@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest an idea or improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What's hard or impossible today? Who hits it?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+    validations:
+      required: true
+  - type: textarea
+    id: user
+    attributes:
+      label: Would a 70-year-old manage it?
+      description: Our target user is set up by a relative and remembers nothing. How does this feel for them?
+  - type: textarea
+    id: security
+    attributes:
+      label: Security trade-offs
+      description: Does this widen the attack surface or touch the threat model?
