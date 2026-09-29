@@ -86,3 +86,15 @@ def test_alert_goes_to_user_contacts_plus_admin(cfg):
     assert cfg.contacts_for("Mom@example.com".lower()) == ["sis@example.com", "admin@example.com"]
     title, body = alerts.compose(cfg, Finding("mass_reveal", "u", T0, "7 passwords revealed."), "mom@example.com", "Mom")
     assert "Mom" in title and "exposure report" in body and "/skp/report?email=mom@example.com" in body
+
+
+def test_shipped_example_config_loads():
+    from pathlib import Path
+
+    from skp_companion.config import load
+
+    example = Path(__file__).parents[2] / "deploy" / "companion.toml.example"
+    cfg = load(str(example))
+    assert cfg.thresholds.reveal_count == 5
+    assert cfg.default_contacts == ["admin@example.com"]
+    assert cfg.contacts_for("mom@example.com") == ["sister@example.com", "admin@example.com"]
