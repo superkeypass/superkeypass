@@ -1,0 +1,51 @@
+# SuperkeyPass: stock Vaultwarden + the companion service, behind Caddy (auto-HTTPS).
+#   cp .env.example .env && cp companion.toml.example companion.toml   # then edit both
+#   docker compose up -d
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    environment:
+      DOMAIN: https://${VAULT_HOST}
+      SIGNUPS_ALLOWED: "false"          # the admin invites family members
+      ADMIN_TOKEN: ${VW_ADMIN_TOKEN}
+      # Required: without these the companion is blind (see companion/README.md).
+      ORG_EVENTS_ENABLED: "true"
+      EVENTS_DAYS_RETAIN: "400"
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURITY: starttls
+      SMTP_USERNAME: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+    volumes:
+      - vw-data:/data
+
+  companion:
+    build: ../companion
+    restart: unless-stopped
+    depends_on: [vaultwarden]
+    env_file: .env
+    environment:
+      SKP_CONFIG: /config/companion.toml
+    volumes:
+      # Read-write mount on purpose: SQLite in WAL mode needs the -shm file even
+      # to read. The companion itself opens the database read-only.
+      - vw-data:/vw-data
+      - skp-data:/data
+      - ./companion.toml:/config/companion.toml:ro
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      VAULT_HOST: ${VAULT_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+
+volumes:
+  vw-data:
+  skp-data:
+  caddy-data:
