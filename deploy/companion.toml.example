@@ -1,0 +1,30 @@
+# SuperkeyPass companion — family configuration.
+# Secrets (admin token, SMTP password, ntfy topic) go in .env, not here.
+
+vault_url   = "https://vault.example.com"   # same as DOMAIN in .env
+family_name = "The Rosso family"
+# vaultwarden_db = "/vw-data/db.sqlite3"
+# state_db       = "/data/companion.sqlite3"
+# poll_seconds   = 15
+
+[admin]              # printed on every recovery sheet as "who to call"
+name  = "Vincent"
+email = "admin@example.com"
+phone = "+1 555 0100"
+
+[thresholds]
+reveal_count     = 5    # distinct items revealed or copied…
+window_minutes   = 2    # …within this window → tamper alert
+cooldown_minutes = 30   # don't repeat the same alert for the same person sooner
+
+# Hears about every alert for every member.
+default_contacts = ["admin@example.com"]
+
+# Per member: who else gets their alerts. Pick someone who will pick up the phone.
+[[members]]
+email = "mom@example.com"
+alert = ["sister@example.com"]
+
+[[members]]
+email = "dad@example.com"
+alert = ["sister@example.com", "mom@example.com"]

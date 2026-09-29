@@ -1,0 +1,11 @@
+{$VAULT_HOST} {
+	encode gzip
+
+	# Companion: reports, recovery sheets, alert log (admin password required).
+	handle_path /skp/* {
+		reverse_proxy companion:8000
+	}
+
+	# Everything else is the vault.
+	reverse_proxy vaultwarden:80
+}

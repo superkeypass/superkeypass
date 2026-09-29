@@ -112,5 +112,12 @@ toward A.
 - Two processes in a "one live server" product — hidden behind a single
   compose file and a single backup command.
 
+**Spike 2 result (2026-09-29): answered — yes, with a condition.** Official
+clients report reveal/copy/autofill/export events and Vaultwarden stores them
+(`src/api/core/events.rs`, `post_events_collect`) — but only with
+`ORG_EVENTS_ENABLED=true` and only for items owned by an organization. So the
+family's items must live in a family organization; personal-vault items stay
+invisible. The companion is built on this (`companion/README.md`).
+
 **Revisit when** either spike returns a hard "no", or the companion needs to
 reach into vault internals to deliver a principle.
