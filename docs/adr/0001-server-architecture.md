@@ -1,8 +1,7 @@
 # ADR 0001: Server architecture — fork, build, or companion?
 
-- **Status:** Proposed — **awaiting a decision**. Options are laid out below;
-  nothing has been chosen.
-- **Date:** 2026-09-28
+- **Status:** Accepted
+- **Date:** 2026-09-28 (proposed) · 2026-09-29 (accepted)
 
 ## Context
 
@@ -84,8 +83,34 @@ can and can't see), with two time-boxed spikes that decide what comes next:
 
 ## Decision
 
-_Not yet made._ To be filled in by the maintainer after reviewing the options.
+**Option C — a companion service alongside unmodified Vaultwarden.**
+
+SuperkeyPass ships as one `docker-compose` bundle: stock Vaultwarden for
+the vault, plus a small SuperkeyPass service that owns recovery
+orchestration, the printed recovery sheet, alert fan-out, and exposure
+reports. The two spikes above run early and decide whether we later extend
+toward A.
 
 ## Consequences
 
-_To be written once a decision is made._
+**Good**
+- Something useful ships soonest, on a server families already trust.
+- No fork to rebase; existing Vaultwarden users can adopt us incrementally.
+- Vault crypto stays Bitwarden's audited code — we don't invent a key
+  hierarchy on day one.
+
+**Bad / accepted**
+- The master password stays in the protocol for now. Principle 1 ("no
+  memorized secrets") depends on spike 1 (trusted-device / passkey unlock);
+  until then the vision's promise is only partly met, and the docs must say so.
+- Mass-reveal detection (threat T3) may be impossible if official clients
+  never report reveals — spike 2 decides. If so, T3 falls back to after-the-
+  fact exposure reports from whatever events *are* visible.
+- Admin-assisted recovery is limited to what Vaultwarden's emergency-access
+  and admin APIs allow; the escrow design in the threat model may need to
+  live partly outside the vault.
+- Two processes in a "one live server" product — hidden behind a single
+  compose file and a single backup command.
+
+**Revisit when** either spike returns a hard "no", or the companion needs to
+reach into vault internals to deliver a principle.
